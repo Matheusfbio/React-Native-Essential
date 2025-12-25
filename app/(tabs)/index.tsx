@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   FlatList,
   StyleSheet,
   ToastAndroid,
@@ -10,6 +11,8 @@ import { Text, View } from "@/components/Themed";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { router } from "expo-router";
+import { reactNativeMockData } from "@/data/reactNativeData";
+import { Suspense, useState } from "react";
 
 export default function Home() {
   type ItemProps = {
@@ -20,143 +23,51 @@ export default function Home() {
     tags: string[];
   };
 
-  const reactNativeMockData = [
-    {
-      id: "1",
-      categoria: "Fundamentos",
-      titulo: "Componentes",
-      descricao:
-        "Elementos reutilizáveis que descrevem partes da interface de usuário.",
-      nivel: "Básico",
-      tags: ["JSX", "UI", "Props"],
-    },
-    {
-      id: "2",
-      categoria: "Fundamentos",
-      titulo: "Props e State",
-      descricao:
-        "Mecanismos para passar dados e manter o estado interno dos componentes.",
-      nivel: "Básico",
-      tags: ["State", "Props", "Reatividade"],
-    },
-    {
-      id: "3",
-      categoria: "Fundamentos",
-      titulo: "Estilização com StyleSheet",
-      descricao:
-        "Forma padrão de estilizar componentes usando objetos JavaScript.",
-      nivel: "Básico",
-      tags: ["Estilo", "CSS-in-JS"],
-    },
-    {
-      id: "4",
-      categoria: "Avançado",
-      titulo: "Hooks personalizados",
-      descricao: "Funções reutilizáveis que encapsulam lógica com React Hooks.",
-      nivel: "Avançado",
-      tags: ["Hooks", "useEffect", "Custom Hooks"],
-    },
-    {
-      id: "5",
-      categoria: "Avançado",
-      titulo: "Context API",
-      descricao:
-        "Mecanismo para compartilhar estado entre vários componentes sem prop drilling.",
-      nivel: "Intermediário",
-      tags: ["Context", "Global State"],
-    },
-    {
-      id: "6",
-      categoria: "Bibliotecas",
-      titulo: "React Navigation",
-      descricao:
-        "Biblioteca para navegação entre telas em aplicações React Native.",
-      nivel: "Intermediário",
-      tags: ["Navigation", "Stack", "Drawer"],
-    },
-    {
-      id: "7",
-      categoria: "Bibliotecas",
-      titulo: "Redux Toolkit",
-      descricao:
-        "Abordagem simplificada para gerenciamento de estado com Redux.",
-      nivel: "Avançado",
-      tags: ["Redux", "Estado Global", "Toolkit"],
-    },
-    {
-      id: "8",
-      categoria: "Performance",
-      titulo: "Memoização de componentes",
-      descricao:
-        "Otimização para evitar renderizações desnecessárias com React.memo e useMemo.",
-      nivel: "Avançado",
-      tags: ["memo", "useMemo", "Performance"],
-    },
-    {
-      id: "9",
-      categoria: "Performance",
-      titulo: "FlatList vs ScrollView",
-      descricao:
-        "Diferença entre listas otimizadas e rolagens completas na tela.",
-      nivel: "Intermediário",
-      tags: ["Listas", "Scroll", "Renderização"],
-    },
-    {
-      id: "10",
-      categoria: "Boas Práticas",
-      titulo: "Componentização",
-      descricao:
-        "Divisão da interface em componentes reutilizáveis e manuteníveis.",
-      nivel: "Intermediário",
-      tags: ["Componentes", "Reutilização"],
-    },
-    {
-      id: "11",
-      categoria: "Boas Práticas",
-      titulo: "Acessibilidade",
-      descricao:
-        "Tornar o app utilizável por pessoas com deficiências, usando props como accessibilityLabel.",
-      nivel: "Avançado",
-      tags: ["A11y", "Inclusão"],
-    },
-    {
-      id: "12",
-      categoria: "Ecossistema",
-      titulo: "Expo vs CLI",
-      descricao: "Diferenças entre o uso do Expo e do React Native CLI puro.",
-      nivel: "Básico",
-      tags: ["Expo", "CLI", "Configuração"],
-    },
-    {
-      id: "13",
-      categoria: "Ecossistema",
-      titulo: "TypeScript no React Native",
-      descricao: "Uso de tipagem estática para melhorar a qualidade do código.",
-      nivel: "Intermediário",
-      tags: ["TypeScript", "TS", "Types"],
-    },
-  ];
-  const navigation = () => {
-    router.navigate("/modal");
-  };
+  const [loadingId, setLoadingId] = useState<string | null>(null);
 
-  const Item = ({ titulo, descricao, nivel, categoria, tags }: ItemProps) => (
-    <View style={styles.card}>
-      <TouchableOpacity
-        onPress={() => {
-          ToastAndroid.show(`${titulo}`, ToastAndroid.SHORT);
-          navigation();
-        }}
-      >
-        <Text style={styles.title}>{titulo}</Text>
-        <Text style={styles.description}>{descricao}</Text>
-        <Text style={styles.meta}>
-          Nível: {nivel} • Categoria: {categoria}
-        </Text>
-        <Text style={styles.tags}>#{tags.join("  #")}</Text>
-      </TouchableOpacity>
-    </View>
-  );
+  const navigation = async (id: string) => {
+    setLoadingId(id);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    router.navigate(`/content/${id}`);
+    setLoadingId(null);
+  };
+  const Item = ({
+    id,
+    titulo,
+    descricao,
+    nivel,
+    categoria,
+    tags,
+  }: ItemProps & { id: string }) => {
+    const isLoading = loadingId === id;
+
+    return (
+      <View style={styles.card}>
+        <TouchableOpacity
+          disabled={isLoading}
+          onPress={() => {
+            navigation(id);
+          }}
+        >
+          {isLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="small" color="#4f46e5" />
+              <Text style={styles.loadingText}>Carregando...</Text>
+            </View>
+          ) : (
+            <>
+              <Text style={styles.title}>{titulo}</Text>
+              <Text style={styles.description}>{descricao}</Text>
+              <Text style={styles.meta}>
+                Nível: {nivel} • Categoria: {categoria}
+              </Text>
+              <Text style={styles.tags}>#{tags.join("  #")}</Text>
+            </>
+          )}
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -202,5 +113,15 @@ const styles = StyleSheet.create({
     color: "#90caf9",
     marginTop: 4,
     fontSize: 13,
+  },
+  loadingContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 20,
+  },
+  loadingText: {
+    marginTop: 8,
+    fontSize: 14,
+    color: "#666",
   },
 });
