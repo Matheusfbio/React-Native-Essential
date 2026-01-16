@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   FlatList,
+  Platform,
   StyleSheet,
   ToastAndroid,
   TouchableOpacity,
@@ -11,7 +12,7 @@ import { Text, View } from "@/components/Themed";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { router } from "expo-router";
-import { reactNativeMockData } from "@/data/reactNativeData";
+import { coreReactNative } from "@/data/reactNativeData";
 import { Suspense, useState } from "react";
 
 export default function Home() {
@@ -28,7 +29,7 @@ export default function Home() {
   const navigation = async (id: string) => {
     setLoadingId(id);
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    router.navigate(`/content/${id}`);
+    router.navigate(`/content/cores/${id}`);
     setLoadingId(null);
   };
   const Item = ({
@@ -74,7 +75,7 @@ export default function Home() {
       <StatusBar style="auto" />
       <FlatList
         style={styles.container}
-        data={reactNativeMockData}
+        data={coreReactNative}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <Item {...item} />}
       />
@@ -85,8 +86,16 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: -25,
-    marginBottom: -55,
+    ...Platform.select({
+      web: {
+        marginTop: 5,
+        marginBottom: -55,
+      },
+      android: {
+        marginTop: -25,
+        marginBottom: -55,
+      },
+    }),
   },
   card: {
     padding: 16,

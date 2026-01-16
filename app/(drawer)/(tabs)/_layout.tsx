@@ -3,9 +3,9 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Link, Tabs } from "expo-router";
 import { Pressable } from "react-native";
 
-import Colors from "@/constants/Colors";
-import { useColorScheme } from "@/components/useColorScheme";
-import { useClientOnlyValue } from "@/components/useClientOnlyValue";
+import Colors from "../../../constants/Colors";
+import { useColorScheme } from "../../../components/useColorScheme";
+import { useClientOnlyValue } from "../../../components/useClientOnlyValue";
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -31,6 +31,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "React Native Essentials",
+          headerShown: false,
           headerTitleAlign: "center",
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           headerRight: () => (

@@ -1,11 +1,18 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-import { useLocalSearchParams } from "expo-router";
-import { reactNativeMockData } from "@/data/reactNativeData";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Platform,
+  TouchableOpacity,
+} from "react-native";
+import { useLocalSearchParams, router, Stack } from "expo-router";
+import { coreReactNative } from "@/data/reactNativeData";
 
 export default function DynamicContent() {
   const { id } = useLocalSearchParams();
-  const item = reactNativeMockData.find((item) => item.id === id);
+  const item = coreReactNative.find((item) => item.id === id);
 
   if (!item || !item.conteudo) {
     return (
@@ -18,7 +25,9 @@ export default function DynamicContent() {
   const { conteudo } = item;
 
   return (
-    <ScrollView>
+    <>
+      <Stack.Screen options={{ title: conteudo.titulo, headerShown: true }} />
+      <ScrollView>
       <View style={styles.container}>
         <Text style={styles.titulo}>{conteudo.titulo}</Text>
         <Text style={styles.texto}>{conteudo.texto}</Text>
@@ -52,14 +61,24 @@ export default function DynamicContent() {
         )}
       </View>
     </ScrollView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: "50%",
-    padding: "10%",
-    backgroundColor: "#f9f9f9",
+    ...Platform.select({
+      android: {
+        paddingBottom: "50%",
+        padding: "5%",
+        backgroundColor: "#f9f9f9",
+      },
+      web: {
+        paddingBottom: "50%",
+        padding: "2%",
+        backgroundColor: "#f9f9f9",
+      },
+    }),
   },
   titulo: {
     fontSize: 24,
@@ -95,5 +114,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 10,
     color: "#444",
+  },
+  backButton: {
+    padding: 15,
+    backgroundColor: "#4f46e5",
+    margin: 10,
+    marginTop: 40,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  backText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
