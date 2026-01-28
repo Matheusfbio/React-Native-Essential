@@ -37,13 +37,21 @@ export default function Layout() {
         }}
       />
       <Drawer.Screen
+        name="suggestions"
+        options={{
+          drawerLabel: "Sugestão",
+          title: "Formulario de sugestão",
+          headerTitleAlign: "center",
+        }}
+      />
+      <Drawer.Screen
         name="settings"
         options={{
           drawerLabel: "⚙️ Configurações",
           title: "Configurações",
           headerTitleAlign: "center",
           drawerItemStyle: {
-            marginTop: "205%",
+            marginTop: "190%",
           },
         }}
       />

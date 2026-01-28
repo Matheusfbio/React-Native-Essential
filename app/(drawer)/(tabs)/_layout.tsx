@@ -74,6 +74,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="suggestions"
         options={{
+          headerShown: false,
           title: "Formulario de sugestões",
           headerTitleAlign: "center",
           tabBarIcon: ({ color, focused }) => (
