@@ -10,7 +10,9 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
 
-import { useColorScheme } from "@/components/useColorScheme";
+import { useTheme } from "@/components/ThemeContext";
+import { ThemeProvider as CustomThemeProvider } from "@/components/ThemeContext";
+import { StatusBar } from "expo-status-bar";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -46,17 +48,31 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutNav />;
+  return (
+    <CustomThemeProvider>
+      <RootLayoutNav />
+    </CustomThemeProvider>
+  );
 }
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
+  const { colorScheme } = useTheme();
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
-      </Stack>
-    </ThemeProvider>
+    <>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          <Stack.Screen name="(drawer)" />
+          <Stack.Screen
+            name="content"
+            options={{ contentStyle: { paddingTop: 30 } }}
+          />
+        </Stack>
+      </ThemeProvider>
+    </>
   );
 }

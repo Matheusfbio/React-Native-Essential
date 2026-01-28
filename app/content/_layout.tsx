@@ -5,7 +5,6 @@ export default function ContentLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { paddingTop: 0 },
       }}
     />
   );
