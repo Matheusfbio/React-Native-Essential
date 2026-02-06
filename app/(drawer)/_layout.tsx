@@ -31,8 +31,8 @@ export default function Layout() {
       <Drawer.Screen
         name="(tabs)"
         options={{
-          drawerLabel: "Core do React Native",
-          title: "Core do React Native",
+          drawerLabel: "Feed",
+          title: "Feed",
           headerTitleAlign: "center",
         }}
       />
@@ -45,13 +45,22 @@ export default function Layout() {
         }}
       />
       <Drawer.Screen
+        name="coreRn"
+        options={{
+          drawerLabel: "Core do React Native",
+          title: "Core do React Native",
+          headerTitleAlign: "center",
+        }}
+      />
+
+      <Drawer.Screen
         name="settings"
         options={{
           drawerLabel: "⚙️ Configurações",
           title: "Configurações",
           headerTitleAlign: "center",
           drawerItemStyle: {
-            marginTop: "190%",
+            marginTop: "180%",
           },
         }}
       />
