@@ -7,16 +7,20 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
+  Image,
+  Button,
 } from "react-native";
 import { useTheme } from "@/components/ThemeContext";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import * as ImagePicker from "expo-image-picker";
 
 interface Post {
   id: number;
   title: string;
   content: string;
   author: string;
+  image_url?: string;
   created_at: string;
 }
 
@@ -27,6 +31,7 @@ export default function Home() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [author, setAuthor] = useState("");
+  const [image, setImage] = useState<string | null>(null);
 
   const loadPosts = async () => {
     const { data } = await supabase
@@ -41,15 +46,53 @@ export default function Home() {
     loadPosts();
   }, []);
 
+  const pickImage = async () => {
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      Alert.alert(
+        "Permissão necessária",
+        "Permissão para acessar a galeria é necessária.",
+      );
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [16, 9],
+      quality: 0.8,
+    });
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
   const createPost = async () => {
     if (!title || !content || !author) {
       Alert.alert("Erro", "Preencha todos os campos");
       return;
     }
-    await supabase.from("posts").insert({ title, content, author });
+
+    let imageUrl = null;
+    if (image) {
+      const fileName = `${Date.now()}.jpg`;
+      const response = await fetch(image);
+      const blob = await response.blob();
+      const { data, error } = await supabase.storage
+        .from("posts-images")
+        .upload(fileName, blob);
+      if (!error && data) {
+        imageUrl = `${process.env.EXPO_PUBLIC_SUPABASE_URL}/storage/v1/object/public/posts-images/${data.path}`;
+      }
+    }
+
+    await supabase
+      .from("posts")
+      .insert({ title, content, author, image_url: imageUrl });
     setTitle("");
     setContent("");
     setAuthor("");
+    setImage(null);
     loadPosts();
   };
 
@@ -73,6 +116,8 @@ export default function Home() {
       <View
         style={[styles.form, { backgroundColor: isDark ? "#2a2a2a" : "#fff" }]}
       >
+        {image && <Image source={{ uri: image }} style={styles.imagePreview} />}
+        <Button title="Escolher Imagem" onPress={pickImage} />
         <TextInput
           style={[
             styles.input,
@@ -128,6 +173,12 @@ export default function Home() {
               { backgroundColor: isDark ? "#2a2a2a" : "#fff" },
             ]}
           >
+            {item.image_url && (
+              <Image
+                source={{ uri: item.image_url }}
+                style={styles.postImage}
+              />
+            )}
             <Text
               style={[styles.title, { color: isDark ? "#e5e5e5" : "#333" }]}
             >
@@ -160,6 +211,7 @@ const styles = StyleSheet.create({
   },
   form: {
     padding: 16,
+    marginTop: 12,
     gap: 12,
   },
   input: {
@@ -202,5 +254,17 @@ const styles = StyleSheet.create({
   },
   source: {
     fontSize: 12,
+  },
+  imagePreview: {
+    width: "100%",
+    height: 180,
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  postImage: {
+    width: "100%",
+    height: 200,
+    borderRadius: 8,
+    marginBottom: 12,
   },
 });
