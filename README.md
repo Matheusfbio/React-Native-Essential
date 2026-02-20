@@ -29,6 +29,10 @@ cd React-Native-Essential
 # Instale as dependências
 npm install
 
+# Configure as variáveis de ambiente
+cp .env.example .env.local
+# Edite .env.local com suas credenciais do Supabase
+
 # Inicie o projeto
 npm start
 ```

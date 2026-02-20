@@ -9,11 +9,11 @@ import {
   Alert,
   Image,
   Button,
-} from "react-native";
-import { useTheme } from "@/components/ThemeContext";
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
-import * as ImagePicker from "expo-image-picker";
+} from 'react-native';
+import { useTheme } from '@/components/ThemeContext';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
+import * as ImagePicker from 'expo-image-picker';
 
 interface Post {
   id: number;
@@ -28,21 +28,21 @@ export default function Home() {
   const { colorScheme } = useTheme();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [author, setAuthor] = useState("");
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [author, setAuthor] = useState('');
   const [image, setImage] = useState<string | null>(null);
 
   const loadPosts = async () => {
     const { data } = await supabase
-      .from("posts")
-      .select("*")
-      .order("created_at", { ascending: false });
+      .from('posts')
+      .select('*')
+      .order('created_at', { ascending: false });
     setPosts(data || []);
     setLoading(false);
   };
 
-  useEffect(() => {
+  useEffaect(() => {
     loadPosts();
   }, []);
 
@@ -51,13 +51,13 @@ export default function Home() {
       await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissionResult.granted) {
       Alert.alert(
-        "Permissão necessária",
-        "Permissão para acessar a galeria é necessária.",
+        'Permissão necessária',
+        'Permissão para acessar a galeria é necessária.'
       );
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
+      mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [16, 9],
       quality: 0.8,
@@ -69,7 +69,7 @@ export default function Home() {
 
   const createPost = async () => {
     if (!title || !content || !author) {
-      Alert.alert("Erro", "Preencha todos os campos");
+      Alert.alert('Erro', 'Preencha todos os campos');
       return;
     }
 
@@ -79,7 +79,7 @@ export default function Home() {
       const response = await fetch(image);
       const blob = await response.blob();
       const { data, error } = await supabase.storage
-        .from("posts-images")
+        .from('posts-images')
         .upload(fileName, blob);
       if (!error && data) {
         imageUrl = `${process.env.EXPO_PUBLIC_SUPABASE_URL}/storage/v1/object/public/posts-images/${data.path}`;
@@ -87,34 +87,34 @@ export default function Home() {
     }
 
     await supabase
-      .from("posts")
+      .from('posts')
       .insert({ title, content, author, image_url: imageUrl });
-    setTitle("");
-    setContent("");
-    setAuthor("");
+    setTitle('');
+    setContent('');
+    setAuthor('');
     setImage(null);
     loadPosts();
   };
 
-  const isDark = colorScheme === "dark";
+  const isDark = colorScheme === 'dark';
 
   if (loading) {
     return (
       <View
         style={[
           styles.container,
-          { backgroundColor: isDark ? "#1a1a1a" : "#f5f5f5" },
+          { backgroundColor: isDark ? '#1a1a1a' : '#f5f5f5' },
         ]}
       >
-        <ActivityIndicator size="large" color={isDark ? "#e5e5e5" : "#333"} />
+        <ActivityIndicator size="large" color={isDark ? '#e5e5e5' : '#333'} />
       </View>
     );
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: isDark ? "#1a1a1a" : "#f5f5f5" }}>
+    <View style={{ flex: 1, backgroundColor: isDark ? '#1a1a1a' : '#f5f5f5' }}>
       <View
-        style={[styles.form, { backgroundColor: isDark ? "#2a2a2a" : "#fff" }]}
+        style={[styles.form, { backgroundColor: isDark ? '#2a2a2a' : '#fff' }]}
       >
         {image && <Image source={{ uri: image }} style={styles.imagePreview} />}
         <Button title="Escolher Imagem" onPress={pickImage} />
@@ -122,12 +122,12 @@ export default function Home() {
           style={[
             styles.input,
             {
-              color: isDark ? "#e5e5e5" : "#333",
-              borderColor: isDark ? "#444" : "#ddd",
+              color: isDark ? '#e5e5e5' : '#333',
+              borderColor: isDark ? '#444' : '#ddd',
             },
           ]}
           placeholder="Título"
-          placeholderTextColor={isDark ? "#888" : "#999"}
+          placeholderTextColor={isDark ? '#888' : '#999'}
           value={title}
           onChangeText={setTitle}
         />
@@ -135,12 +135,12 @@ export default function Home() {
           style={[
             styles.input,
             {
-              color: isDark ? "#e5e5e5" : "#333",
-              borderColor: isDark ? "#444" : "#ddd",
+              color: isDark ? '#e5e5e5' : '#333',
+              borderColor: isDark ? '#444' : '#ddd',
             },
           ]}
           placeholder="Conteúdo"
-          placeholderTextColor={isDark ? "#888" : "#999"}
+          placeholderTextColor={isDark ? '#888' : '#999'}
           value={content}
           onChangeText={setContent}
           multiline
@@ -149,12 +149,12 @@ export default function Home() {
           style={[
             styles.input,
             {
-              color: isDark ? "#e5e5e5" : "#333",
-              borderColor: isDark ? "#444" : "#ddd",
+              color: isDark ? '#e5e5e5' : '#333',
+              borderColor: isDark ? '#444' : '#ddd',
             },
           ]}
           placeholder="Autor"
-          placeholderTextColor={isDark ? "#888" : "#999"}
+          placeholderTextColor={isDark ? '#888' : '#999'}
           value={author}
           onChangeText={setAuthor}
         />
@@ -165,12 +165,12 @@ export default function Home() {
       <FlatList
         data={posts}
         contentContainerStyle={styles.list}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={item => item.id.toString()}
         renderItem={({ item }) => (
           <View
             style={[
               styles.card,
-              { backgroundColor: isDark ? "#2a2a2a" : "#fff" },
+              { backgroundColor: isDark ? '#2a2a2a' : '#fff' },
             ]}
           >
             {item.image_url && (
@@ -180,21 +180,21 @@ export default function Home() {
               />
             )}
             <Text
-              style={[styles.title, { color: isDark ? "#e5e5e5" : "#333" }]}
+              style={[styles.title, { color: isDark ? '#e5e5e5' : '#333' }]}
             >
               {item.title}
             </Text>
             <Text
               style={[
                 styles.description,
-                { color: isDark ? "#b5b5b5" : "#666" },
+                { color: isDark ? '#b5b5b5' : '#666' },
               ]}
             >
               {item.content}
             </Text>
-            <Text style={[styles.source, { color: isDark ? "#888" : "#999" }]}>
-              {item.author} •{" "}
-              {new Date(item.created_at).toLocaleDateString("pt-BR")}
+            <Text style={[styles.source, { color: isDark ? '#888' : '#999' }]}>
+              {item.author} •{' '}
+              {new Date(item.created_at).toLocaleDateString('pt-BR')}
             </Text>
           </View>
         )}
@@ -206,8 +206,8 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   form: {
     padding: 16,
@@ -221,14 +221,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   button: {
-    backgroundColor: "#007AFF",
+    backgroundColor: '#007AFF',
     padding: 12,
     borderRadius: 8,
-    alignItems: "center",
+    alignItems: 'center',
   },
   buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
+    color: '#fff',
+    fontWeight: 'bold',
   },
   list: {
     padding: 16,
@@ -238,14 +238,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 16,
     elevation: 2,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
   title: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 8,
   },
   description: {
@@ -256,13 +256,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   imagePreview: {
-    width: "100%",
+    width: '100%',
     height: 180,
     borderRadius: 8,
     marginBottom: 12,
   },
   postImage: {
-    width: "100%",
+    width: '100%',
     height: 200,
     borderRadius: 8,
     marginBottom: 12,
