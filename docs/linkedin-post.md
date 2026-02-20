@@ -7,12 +7,14 @@ Estou desenvolvendo um **app educativo** focado em React Native, criado para aju
 ## ✅ Funcionalidades Implementadas
 
 ### 🏠 **Tela Principal**
+
 - Lista interativa com 13 tópicos fundamentais
 - Loading individual por item
 - Navegação dinâmica baseada em conteúdo
 - Interface responsiva e moderna
 
 ### 📚 **Sistema de Conteúdo**
+
 - Dados estruturados em TypeScript
 - Conteúdo detalhado para cada tópico
 - Renderização dinâmica de:
@@ -22,6 +24,7 @@ Estou desenvolvendo um **app educativo** focado em React Native, criado para aju
   - Citações e dicas
 
 ### 💡 **Sistema de Sugestões**
+
 - Formulário completo para feedback
 - Envio direto por email via Formspree
 - Validação de campos obrigatórios
@@ -29,6 +32,7 @@ Estou desenvolvendo um **app educativo** focado em React Native, criado para aju
 - Interface intuitiva e acessível
 
 ### 🔔 **Push Notifications**
+
 - Integração com Expo Notifications
 - Notificações locais funcionais
 - Configuração para Firebase (futuro)
@@ -78,6 +82,7 @@ Estou desenvolvendo um **app educativo** focado em React Native, criado para aju
 Desenvolver este projeto tem sido uma jornada incrível de aprendizado! Cada funcionalidade implementada trouxe novos desafios e oportunidades de crescimento.
 
 **Principais aprendizados:**
+
 - Estruturação de dados para conteúdo dinâmico
 - Integração de APIs externas (Formspree)
 - Gerenciamento de estado com hooks
@@ -96,4 +101,4 @@ O projeto está aberto para sugestões e melhorias! Através do próprio app, os
 
 **🚀 Sempre em busca de novos desafios e oportunidades de crescimento!**
 
-*Desenvolvido com ❤️ por Matheus Fábio*
+_Desenvolvido com ❤️ por Matheus Fábio_

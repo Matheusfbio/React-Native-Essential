@@ -49,51 +49,23 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "React Native Essentials",
+          title: "New feed",
           headerShown: false,
           headerTitleAlign: "center",
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name="code" color={color} focused={focused} />
-          ),
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? "light"].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
+            <TabBarIcon name="pencil-square" color={color} focused={focused} />
           ),
         }}
       />
       <Tabs.Screen
-        name="suggestions"
+        name="feed"
         options={{
           headerShown: false,
-          title: "Formulario de sugestões",
+          title: "Feed",
           headerTitleAlign: "center",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name="book" color={color} focused={focused} />
           ),
-          // headerRight: () => (
-          //   <Link href="/modal" asChild>
-          //     <Pressable>
-          //       {({ pressed }) => (
-          //         <FontAwesome
-          //           name="info-circle"
-          //           size={25}
-          //           color={Colors[colorScheme ?? "light"].text}
-          //           style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-          //         />
-          //       )}
-          //     </Pressable>
-          //   </Link>
-          // ),
         }}
       />
     </Tabs>
