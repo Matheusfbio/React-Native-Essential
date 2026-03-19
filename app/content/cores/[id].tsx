@@ -39,8 +39,16 @@ export default function DynamicContent() {
     <>
       <Stack.Screen
         options={{
-          title: conteudo.titulo,
           headerShown: true,
+          headerTitle: () => (
+            <Text
+              numberOfLines={2}
+              adjustsFontSizeToFit
+              style={{ fontSize: 16, fontWeight: 'bold', flexShrink: 1, maxWidth: 260 }}
+            >
+              {conteudo.titulo}
+            </Text>
+          ),
         }}
       />
       <ScrollView>

@@ -8,28 +8,33 @@ interface ThemeContextType {
   theme: Theme;
   colorScheme: 'light' | 'dark';
   setTheme: (theme: Theme) => void;
+  accentColor: string;
+  setAccentColor: (color: string) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('system');
+  const [accentColor, setAccentColorState] = useState('#4f46e5');
   const systemColorScheme = useSystemColorScheme();
 
   const colorScheme = theme === 'system' ? (systemColorScheme ?? 'light') : theme;
 
   useEffect(() => {
-    loadTheme();
+    loadSettings();
   }, []);
 
-  const loadTheme = async () => {
+  const loadSettings = async () => {
     try {
-      const savedTheme = await AsyncStorage.getItem('theme');
-      if (savedTheme) {
-        setTheme(savedTheme as Theme);
-      }
+      const [savedTheme, savedAccent] = await Promise.all([
+        AsyncStorage.getItem('theme'),
+        AsyncStorage.getItem('accentColor'),
+      ]);
+      if (savedTheme) setTheme(savedTheme as Theme);
+      if (savedAccent) setAccentColorState(savedAccent);
     } catch (error) {
-      console.log('Error loading theme:', error);
+      console.log('Error loading settings:', error);
     }
   };
 
@@ -42,8 +47,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const handleSetAccentColor = async (color: string) => {
+    try {
+      await AsyncStorage.setItem('accentColor', color);
+      setAccentColorState(color);
+    } catch (error) {
+      console.log('Error saving accent color:', error);
+    }
+  };
+
   return (
-    <ThemeContext.Provider value={{ theme, colorScheme, setTheme: handleSetTheme }}>
+    <ThemeContext.Provider value={{ theme, colorScheme, setTheme: handleSetTheme, accentColor, setAccentColor: handleSetAccentColor }}>
       {children}
     </ThemeContext.Provider>
   );

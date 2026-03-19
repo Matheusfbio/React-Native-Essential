@@ -1,5 +1,5 @@
-import { Drawer } from "expo-router/drawer";
-import { useTheme } from "@/components/ThemeContext";
+import { Drawer } from 'expo-router/drawer';
+import { useTheme } from '@/components/ThemeContext';
 
 export default function Layout() {
   const { colorScheme } = useTheme();
@@ -8,59 +8,59 @@ export default function Layout() {
     <Drawer
       screenOptions={{
         drawerStyle: {
-          backgroundColor: colorScheme === "dark" ? "#1a1a1a" : "#fff",
+          backgroundColor: colorScheme === 'dark' ? '#1a1a1a' : '#fff',
         },
         drawerLabelStyle: {
-          color: colorScheme === "dark" ? "#e5e5e5" : "#333",
+          color: colorScheme === 'dark' ? '#e5e5e5' : '#333',
+          height: 35,
         },
         headerStyle: {
-          backgroundColor: colorScheme === "dark" ? "#1a1a1a" : "#fff",
+          backgroundColor: colorScheme === 'dark' ? '#1a1a1a' : '#fff',
           height: 80,
         },
-        headerTintColor: colorScheme === "dark" ? "#e5e5e5" : "#333",
+        headerTintColor: colorScheme === 'dark' ? '#e5e5e5' : '#333',
       }}
     >
       <Drawer.Screen
-        name="index"
+        name="feed/feed"
         options={{
-          drawerLabel: "Fundamentos inegociáveis",
-          title: "Fundamentos inegociáveis",
-          headerTitleAlign: "center",
-        }}
-      />
-      <Drawer.Screen
-        name="(tabs)"
-        options={{
-          drawerLabel: "Feed",
-          title: "Feed",
-          headerTitleAlign: "center",
+          drawerLabel: 'Feed',
+          title: 'Feed',
+          headerTitleAlign: 'center',
         }}
       />
       <Drawer.Screen
         name="suggestions"
         options={{
-          drawerLabel: "Sugestão",
-          title: "Formulario de sugestão",
-          headerTitleAlign: "center",
+          drawerLabel: 'Sugestão',
+          title: 'Formulario de sugestão',
+          headerTitleAlign: 'center',
         }}
       />
       <Drawer.Screen
-        name="coreRn"
+        name="rn/content/index"
         options={{
-          drawerLabel: "Core do React Native",
-          title: "Core do React Native",
-          headerTitleAlign: "center",
+          drawerLabel: 'Conteúdos',
+          title: 'Conteúdos',
+          headerTitleAlign: 'center',
         }}
       />
-
+      <Drawer.Screen
+        name="rn/content/coreRn"
+        options={{ drawerItemStyle: { display: 'none' } }}
+      />
+      <Drawer.Screen
+        name="rn/content/fundament"
+        options={{ drawerItemStyle: { display: 'none' } }}
+      />
       <Drawer.Screen
         name="settings"
         options={{
-          drawerLabel: "⚙️ Configurações",
-          title: "Configurações",
-          headerTitleAlign: "center",
+          drawerLabel: '⚙️ Configurações',
+          title: 'Configurações',
+          headerTitleAlign: 'center',
           drawerItemStyle: {
-            marginTop: "180%",
+            marginTop: '180%',
           },
         }}
       />

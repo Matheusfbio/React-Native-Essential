@@ -6,14 +6,14 @@ import {
   StyleSheet,
   ToastAndroid,
   TouchableOpacity,
-} from "react-native";
+} from 'react-native';
 
-import { Text, View } from "@/components/Themed";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { StatusBar } from "expo-status-bar";
-import { router } from "expo-router";
-import { useState } from "react";
-import { NonnegotiableFundamentals } from "@/data/Non-negotiablefundamentalsData";
+import { Text, View } from '@/components/Themed';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
+import { router } from 'expo-router';
+import { useState } from 'react';
+import { NonnegotiableFundamentals } from '@/data/Non-negotiablefundamentalsData';
 
 export default function Home() {
   type ItemProps = {
@@ -28,7 +28,7 @@ export default function Home() {
 
   const navigation = async (id: string) => {
     setLoadingId(id);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 1000));
     router.navigate(`/content/fundamentals/${id}`);
     setLoadingId(null);
   };
@@ -62,7 +62,7 @@ export default function Home() {
               <Text style={styles.meta}>
                 Nível: {nivel} • Categoria: {categoria}
               </Text>
-              <Text style={styles.tags}>#{tags.join("  #")}</Text>
+              <Text style={styles.tags}>#{tags.join('  #')}</Text>
             </>
           )}
         </TouchableOpacity>
@@ -76,7 +76,7 @@ export default function Home() {
       <FlatList
         style={styles.container}
         data={NonnegotiableFundamentals}
-        keyExtractor={(item) => item.id}
+        keyExtractor={item => item.id}
         renderItem={({ item }) => <Item {...item} />}
       />
     </SafeAreaView>
@@ -99,38 +99,38 @@ const styles = StyleSheet.create({
   },
   card: {
     padding: 16,
-    width: "90%",
-    marginHorizontal: "auto",
+    width: '90%',
+    marginHorizontal: 'auto',
     marginBottom: 12,
     borderRadius: 10,
     elevation: 2,
   },
   title: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   description: {
-    color: "#ccc",
+    color: '#ccc',
     marginVertical: 4,
   },
   meta: {
-    color: "#999",
+    color: '#999',
     fontSize: 12,
     marginTop: 4,
   },
   tags: {
-    color: "#90caf9",
+    color: '#90caf9',
     marginTop: 4,
     fontSize: 13,
   },
   loadingContainer: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: 20,
   },
   loadingText: {
     marginTop: 8,
     fontSize: 14,
-    color: "#666",
+    color: '#666',
   },
 });
