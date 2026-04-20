@@ -1,221 +1,156 @@
-import { StyleSheet, ScrollView, Alert } from "react-native";
-import { useState } from "react";
-import { Text, View } from "@/components/Themed";
-import { TextInput, Button } from "react-native";
-import * as MailComposer from "expo-mail-composer";
-import { useTheme } from "@/components/ThemeContext";
+import { StyleSheet, ScrollView, Alert, TextInput, TouchableOpacity } from 'react-native';
+import { useState } from 'react';
+import { Text, View } from '@/components/Themed';
+import { useTheme } from '@/components/ThemeContext';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Suggestions() {
-  const [nome, setNome] = useState("");
-  const [email, setEmail] = useState("");
-  const [tipoSugestao, setTipoSugestao] = useState("");
-  const [sugestao, setSugestao] = useState("");
-  const { colorScheme } = useTheme();
+  const [nome, setNome] = useState('');
+  const [email, setEmail] = useState('');
+  const [tipoSugestao, setTipoSugestao] = useState('');
+  const [sugestao, setSugestao] = useState('');
+  const { colorScheme, accentColor } = useTheme();
+  const dark = colorScheme === 'dark';
+
+  const bg = dark ? '#1a1a1a' : '#f5f5f5';
+  const card = dark ? '#2a2a2a' : '#fff';
+  const labelColor = dark ? '#e5e5e5' : '#333';
+  const sublabel = dark ? '#999' : '#666';
+  const borderColor = dark ? '#ffffff15' : '#00000010';
+  const inputBg = dark ? '#2a2a2a' : '#fff';
+  const inputBorder = dark ? '#ffffff15' : '#ddd';
 
   const enviarSugestao = async () => {
     if (!nome || !email || !sugestao) {
-      Alert.alert("Erro", "Preencha todos os campos obrigatórios");
+      Alert.alert('Erro', 'Preencha todos os campos obrigatórios');
       return;
     }
 
-    const dados = {
-      nome,
-      email,
-      tipo: tipoSugestao || "Geral",
-      sugestao,
-      timestamp: new Date().toISOString(),
-    };
-
     try {
-      const response = await fetch("https://formspree.io/f/mzdbpgpz", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dados),
+      const response = await fetch('https://formspree.io/f/mzdbpgpz', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, email, tipo: tipoSugestao || 'Geral', sugestao, timestamp: new Date().toISOString() }),
       });
 
       if (response.ok) {
-        Alert.alert(
-          "Sugestão Enviada!",
-          "Obrigado pela sua contribuição. Sua sugestão foi enviada com sucesso!",
-          [
-            {
-              text: "OK",
-              onPress: () => {
-                setNome("");
-                setEmail("");
-                setTipoSugestao("");
-                setSugestao("");
-              },
-            },
-          ]
-        );
+        Alert.alert('Sugestão Enviada!', 'Obrigado pela sua contribuição!', [{
+          text: 'OK',
+          onPress: () => { setNome(''); setEmail(''); setTipoSugestao(''); setSugestao(''); },
+        }]);
       } else {
-        throw new Error("Erro no envio");
+        throw new Error('Erro no envio');
       }
-    } catch (error) {
-      Alert.alert(
-        "Erro no Envio",
-        "Não foi possível enviar a sugestão. Tente novamente mais tarde.",
-        [
-          { text: "Cancelar" },
-          { text: "Tentar Novamente", onPress: enviarSugestao },
-        ]
-      );
+    } catch {
+      Alert.alert('Erro no Envio', 'Não foi possível enviar. Tente novamente.', [
+        { text: 'Cancelar' },
+        { text: 'Tentar Novamente', onPress: enviarSugestao },
+      ]);
     }
   };
 
+  const inputStyle = [styles.input, { backgroundColor: inputBg, borderColor: inputBorder, color: labelColor }];
+
   return (
-    <ScrollView style={[styles.container, colorScheme === 'dark' && styles.containerDark]}>
-      <View style={[styles.header, colorScheme === 'dark' && styles.headerDark]}>
-        <Text style={styles.title}>💡 Sugestões</Text>
-        <Text style={styles.subtitle}>
-          Ajude-nos a melhorar o app com suas ideias!
-        </Text>
-      </View>
+    <SafeAreaView style={[styles.container, { backgroundColor: bg }]}>
+      <ScrollView contentContainerStyle={styles.scroll}>
 
-      <View style={[styles.form, colorScheme === 'dark' && styles.formDark]}>
-        <Text style={[styles.label, colorScheme === 'dark' && styles.labelDark]}>Nome *</Text>
-        <TextInput
-          style={[styles.input, colorScheme === 'dark' && styles.inputDark]}
-          placeholder="Seu nome"
-          placeholderTextColor={colorScheme === 'dark' ? '#a3a3a3' : '#666'}
-          value={nome}
-          onChangeText={setNome}
-        />
+        <View style={[styles.card, { backgroundColor: card }]}>
+          <Text style={[styles.sectionTitle, { color: sublabel }]}>INFORMAÇÕES</Text>
 
-        <Text style={[styles.label, colorScheme === 'dark' && styles.labelDark]}>Email *</Text>
-        <TextInput
-          style={[styles.input, colorScheme === 'dark' && styles.inputDark]}
-          placeholder="seu@email.com"
-          placeholderTextColor={colorScheme === 'dark' ? '#a3a3a3' : '#666'}
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-        />
+          <Text style={[styles.label, { color: labelColor }]}>Nome *</Text>
+          <TextInput
+            style={inputStyle}
+            placeholder="Seu nome"
+            placeholderTextColor={sublabel}
+            value={nome}
+            onChangeText={setNome}
+          />
 
-        <Text style={[styles.label, colorScheme === 'dark' && styles.labelDark]}>Tipo de Sugestão</Text>
-        <TextInput
-          style={[styles.input, colorScheme === 'dark' && styles.inputDark]}
-          placeholder="Ex: Nova funcionalidade, Melhoria, Bug"
-          placeholderTextColor={colorScheme === 'dark' ? '#a3a3a3' : '#666'}
-          value={tipoSugestao}
-          onChangeText={setTipoSugestao}
-        />
+          <Text style={[styles.label, { color: labelColor }]}>Email *</Text>
+          <TextInput
+            style={inputStyle}
+            placeholder="seu@email.com"
+            placeholderTextColor={sublabel}
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
 
-        <Text style={[styles.label, colorScheme === 'dark' && styles.labelDark]}>Sua Sugestão *</Text>
-        <TextInput
-          style={[styles.input, styles.textArea, colorScheme === 'dark' && styles.inputDark]}
-          placeholder="Descreva sua ideia ou sugestão de melhoria..."
-          placeholderTextColor={colorScheme === 'dark' ? '#a3a3a3' : '#666'}
-          value={sugestao}
-          onChangeText={setSugestao}
-          multiline
-          numberOfLines={4}
-        />
+          <Text style={[styles.label, { color: labelColor }]}>Tipo de Sugestão</Text>
+          <TextInput
+            style={inputStyle}
+            placeholder="Ex: Nova funcionalidade, Melhoria, Bug"
+            placeholderTextColor={sublabel}
+            value={tipoSugestao}
+            onChangeText={setTipoSugestao}
+          />
 
-        <Button title="Enviar Sugestão" onPress={enviarSugestao} />
-      </View>
+          <Text style={[styles.label, { color: labelColor }]}>Sua Sugestão *</Text>
+          <TextInput
+            style={[inputStyle, styles.textArea]}
+            placeholder="Descreva sua ideia ou sugestão..."
+            placeholderTextColor={sublabel}
+            value={sugestao}
+            onChangeText={setSugestao}
+            multiline
+            numberOfLines={4}
+          />
 
-      <View style={[styles.examples, colorScheme === 'dark' && styles.examplesDark]}>
-        <Text style={[styles.exampleTitle, colorScheme === 'dark' && styles.exampleTitleDark]}>💭 Exemplos de sugestões:</Text>
-        <Text style={[styles.example, colorScheme === 'dark' && styles.exampleDark]}>• Adicionar modo escuro</Text>
-        <Text style={[styles.example, colorScheme === 'dark' && styles.exampleDark]}>• Melhorar navegação</Text>
-        <Text style={[styles.example, colorScheme === 'dark' && styles.exampleDark]}>• Novos tópicos de React Native</Text>
-        <Text style={[styles.example, colorScheme === 'dark' && styles.exampleDark]}>• Sistema de favoritos</Text>
-        <Text style={[styles.example, colorScheme === 'dark' && styles.exampleDark]}>• Busca por conteúdo</Text>
-      </View>
-    </ScrollView>
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: accentColor }]}
+            onPress={enviarSugestao}
+          >
+            <Text style={styles.buttonText}>Enviar Sugestão</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={[styles.card, { backgroundColor: card }]}>
+          <Text style={[styles.sectionTitle, { color: sublabel }]}>EXEMPLOS</Text>
+          {['Adicionar modo escuro', 'Melhorar navegação', 'Novos tópicos de React Native', 'Sistema de favoritos', 'Busca por conteúdo'].map(item => (
+            <Text key={item} style={[styles.example, { color: sublabel, borderBottomColor: borderColor }]}>• {item}</Text>
+          ))}
+        </View>
+
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f9f9f9",
+  container: { flex: 1 },
+  scroll: { padding: 16, gap: 12 },
+  card: {
+    borderRadius: 12,
+    padding: 16,
+    gap: 8,
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
   },
-  containerDark: {
-    backgroundColor: "#1a1a1a",
+  sectionTitle: {
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 1,
+    marginBottom: 4,
   },
-  header: {
-    padding: 20,
-    backgroundColor: "#4f46e5",
-    alignItems: "center",
-  },
-  headerDark: {
-    backgroundColor: "#8b5cf6",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#fff",
-    marginBottom: 5,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#e0e7ff",
-    textAlign: "center",
-  },
-  form: {
-    padding: 20,
-  },
-  formDark: {
-    backgroundColor: "#1a1a1a",
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 5,
-    color: "#333",
-  },
-  labelDark: {
-    color: "#e5e5e5",
-  },
+  label: { fontSize: 14, fontWeight: '500' },
   input: {
     borderWidth: 1,
-    borderColor: "#ddd",
     borderRadius: 8,
     padding: 12,
-    marginBottom: 15,
     fontSize: 16,
-    backgroundColor: "#fff",
-    color: "#333",
   },
-  inputDark: {
-    backgroundColor: "#2d2d2d",
-    borderColor: "#555",
-    color: "#e5e5e5",
-  },
-  textArea: {
-    height: 100,
-    textAlignVertical: "top",
-  },
-  examples: {
-    padding: 20,
-    backgroundColor: "#fff",
-    margin: 20,
+  textArea: { height: 100, textAlignVertical: 'top' },
+  button: {
+    padding: 14,
     borderRadius: 10,
-    elevation: 2,
+    alignItems: 'center',
+    marginTop: 4,
   },
-  examplesDark: {
-    backgroundColor: "#2d2d2d",
-  },
-  exampleTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-    color: "#4f46e5",
-  },
-  exampleTitleDark: {
-    color: "#8b5cf6",
-  },
-  example: {
-    fontSize: 14,
-    color: "#666",
-    marginBottom: 5,
-  },
-  exampleDark: {
-    color: "#a3a3a3",
-  },
+  buttonText: { color: '#fff', fontWeight: '600', fontSize: 16 },
+  example: { fontSize: 14, paddingVertical: 8, borderBottomWidth: 1 },
 });

@@ -12,6 +12,7 @@ import 'react-native-reanimated';
 
 import { useTheme } from '@/components/ThemeContext';
 import { ThemeProvider as CustomThemeProvider } from '@/components/ThemeContext';
+import { FavoritesProvider } from '@/components/FavoritesContext';
 import { StatusBar } from 'expo-status-bar';
 
 export {
@@ -49,7 +50,9 @@ export default function RootLayout() {
 
   return (
     <CustomThemeProvider>
-      <RootLayoutNav />
+      <FavoritesProvider>
+        <RootLayoutNav />
+      </FavoritesProvider>
     </CustomThemeProvider>
   );
 }

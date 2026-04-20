@@ -32,6 +32,7 @@ yarn-error.*
 
 # amazon q
 .amazonq
+docs/*
 # local env files
 .env*.local
 

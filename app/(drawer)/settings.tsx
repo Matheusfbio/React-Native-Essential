@@ -1,4 +1,11 @@
-import { View, StyleSheet, TouchableOpacity, ScrollView, Switch, Platform } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Switch,
+  Platform,
+} from 'react-native';
 import { Text } from '@/components/Themed';
 import { useTheme } from '@/components/ThemeContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -9,19 +16,20 @@ const THEMES = [
   { value: 'system', label: '⚙️ Sistema' },
 ] as const;
 
-const ACCENT_COLORS = [
-  { color: '#4f46e5', label: 'Índigo' },
-  { color: '#0ea5e9', label: 'Azul' },
-  { color: '#10b981', label: 'Verde' },
-  { color: '#f59e0b', label: 'Âmbar' },
-  { color: '#ef4444', label: 'Vermelho' },
-  { color: '#ec4899', label: 'Rosa' },
-  { color: '#8b5cf6', label: 'Violeta' },
-  { color: '#f97316', label: 'Laranja' },
-];
+// const ACCENT_COLORS = [
+//   { color: '#4f46e5', label: 'Índigo' },
+//   { color: '#0ea5e9', label: 'Azul' },
+//   { color: '#10b981', label: 'Verde' },
+//   { color: '#f59e0b', label: 'Âmbar' },
+//   { color: '#ef4444', label: 'Vermelho' },
+//   { color: '#ec4899', label: 'Rosa' },
+//   { color: '#8b5cf6', label: 'Violeta' },
+//   { color: '#f97316', label: 'Laranja' },
+// ];
 
 export default function Settings() {
-  const { theme, setTheme, colorScheme, accentColor, setAccentColor } = useTheme();
+  const { theme, setTheme, colorScheme, accentColor, setAccentColor } =
+    useTheme();
   const dark = colorScheme === 'dark';
   const bg = dark ? '#1a1a1a' : '#f5f5f5';
   const card = dark ? '#2a2a2a' : '#fff';
@@ -31,7 +39,6 @@ export default function Settings() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: bg }]}>
       <ScrollView contentContainerStyle={styles.scroll}>
-
         <Text style={[styles.sectionTitle, { color: sub }]}>APARÊNCIA</Text>
         <View style={[styles.card, { backgroundColor: card }]}>
           {THEMES.map(({ value, label }, i) => (
@@ -39,20 +46,29 @@ export default function Settings() {
               key={value}
               style={[
                 styles.row,
-                i < THEMES.length - 1 && { borderBottomWidth: 1, borderBottomColor: dark ? '#333' : '#f0f0f0' },
+                i < THEMES.length - 1 && {
+                  borderBottomWidth: 1,
+                  borderBottomColor: dark ? '#333' : '#f0f0f0',
+                },
               ]}
               onPress={() => setTheme(value)}
             >
               <Text style={[styles.rowLabel, { color: text }]}>{label}</Text>
               <View style={[styles.radio, { borderColor: accentColor }]}>
-                {theme === value && <View style={[styles.radioDot, { backgroundColor: accentColor }]} />}
+                {theme === value && (
+                  <View
+                    style={[styles.radioDot, { backgroundColor: accentColor }]}
+                  />
+                )}
               </View>
             </TouchableOpacity>
           ))}
         </View>
 
-        <Text style={[styles.sectionTitle, { color: sub }]}>COR DE DESTAQUE</Text>
-        <View style={[styles.card, { backgroundColor: card }]}>
+        {/* <Text style={[styles.sectionTitle, { color: sub }]}>
+          COR DE DESTAQUE
+        </Text> */}
+        {/* <View style={[styles.card, { backgroundColor: card }]}>
           <View style={styles.colorGrid}>
             {ACCENT_COLORS.map(({ color, label }) => (
               <TouchableOpacity
@@ -60,27 +76,30 @@ export default function Settings() {
                 style={styles.colorItem}
                 onPress={() => setAccentColor(color)}
               >
-                <View style={[
-                  styles.colorCircle,
-                  { backgroundColor: color },
-                  accentColor === color && styles.colorSelected,
-                ]} />
+                <View
+                  style={[
+                    styles.colorCircle,
+                    { backgroundColor: color },
+                    accentColor === color && styles.colorSelected,
+                  ]}
+                />
                 <Text style={[styles.colorLabel, { color: sub }]}>{label}</Text>
               </TouchableOpacity>
             ))}
           </View>
-        </View>
+        </View> */}
 
-        <Text style={[styles.sectionTitle, { color: sub }]}>PRÉVIA</Text>
+        {/* <Text style={[styles.sectionTitle, { color: sub }]}>PRÉVIA</Text>
         <View style={[styles.card, { backgroundColor: card }]}>
           <View style={[styles.preview, { backgroundColor: accentColor }]}>
             <Text style={styles.previewText}>Cor de destaque ativa</Text>
           </View>
-          <TouchableOpacity style={[styles.previewButton, { backgroundColor: accentColor }]}>
+          <TouchableOpacity
+            style={[styles.previewButton, { backgroundColor: accentColor }]}
+          >
             <Text style={styles.previewButtonText}>Botão de exemplo</Text>
           </TouchableOpacity>
-        </View>
-
+        </View> */}
       </ScrollView>
     </SafeAreaView>
   );

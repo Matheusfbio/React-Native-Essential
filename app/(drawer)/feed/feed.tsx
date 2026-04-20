@@ -7,129 +7,222 @@ import {
   Image,
   TouchableOpacity,
   Linking,
-} from "react-native";
-import { useTheme } from "@/components/ThemeContext";
-import { useEffect, useState } from "react";
+  Modal,
+  ScrollView,
+} from 'react-native';
+import { useTheme } from '@/components/ThemeContext';
+import { useFavorites, Article } from '@/components/FavoritesContext';
+import { useEffect, useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 
-interface Article {
-  title: string;
-  description: string;
-  url: string;
-  urlToImage: string;
-  publishedAt: string;
-  source: { name: string };
+function ArticleModal({ article, visible, onClose, dark, accentColor }: {
+  article: Article | null;
+  visible: boolean;
+  onClose: () => void;
+  dark: boolean;
+  accentColor: string;
+}) {
+  const { toggleFavorite, isFavorite } = useFavorites();
+  if (!article) return null;
+
+  const bg = dark ? '#1a1a1a' : '#f5f5f5';
+  const card = dark ? '#2a2a2a' : '#fff';
+  const labelColor = dark ? '#e5e5e5' : '#333';
+  const sublabel = dark ? '#999' : '#666';
+  const favorited = isFavorite(article.url);
+
+  return (
+    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+      <View style={[styles.modalContainer, { backgroundColor: bg }]}>
+        <View style={[styles.modalHeader, { backgroundColor: card, borderBottomColor: dark ? '#ffffff15' : '#00000010' }]}>
+          <TouchableOpacity onPress={onClose} style={styles.headerButton}>
+            <Ionicons name="close" size={24} color={labelColor} />
+          </TouchableOpacity>
+          <Text style={[styles.modalSource, { color: sublabel }]} numberOfLines={1}>
+            {article.source.name}
+          </Text>
+          <View style={styles.headerActions}>
+            <TouchableOpacity onPress={() => toggleFavorite(article)} style={styles.headerButton}>
+              <Ionicons
+                name={favorited ? 'heart' : 'heart-outline'}
+                size={22}
+                color={favorited ? '#ef4444' : labelColor}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => Linking.openURL(article.url)} style={styles.headerButton}>
+              <Ionicons name="open-outline" size={22} color={accentColor} />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <ScrollView contentContainerStyle={styles.modalScroll} showsVerticalScrollIndicator={false}>
+          {article.urlToImage && (
+            <Image source={{ uri: article.urlToImage }} style={styles.modalImage} />
+          )}
+          <View style={[styles.modalContent, { backgroundColor: card }]}>
+            <Text style={[styles.modalTitle, { color: labelColor }]}>{article.title}</Text>
+
+            <View style={styles.modalMeta}>
+              <Ionicons name="calendar-outline" size={13} color={sublabel} />
+              <Text style={[styles.modalDate, { color: sublabel }]}>
+                {new Date(article.publishedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
+              </Text>
+            </View>
+
+            <View style={[styles.divider, { backgroundColor: dark ? '#ffffff15' : '#00000010' }]} />
+
+            <Text style={[styles.modalDescription, { color: dark ? '#ccc' : '#444' }]}>
+              {article.description}
+            </Text>
+
+            {article.content && (
+              <Text style={[styles.modalBody, { color: sublabel }]}>
+                {article.content.replace(/\[\+\d+ chars\]/, '').trim()}
+              </Text>
+            )}
+
+            <TouchableOpacity
+              style={[styles.readMoreButton, { backgroundColor: accentColor }]}
+              onPress={() => Linking.openURL(article.url)}
+            >
+              <Text style={styles.readMoreText}>Ler artigo completo</Text>
+              <Ionicons name="arrow-forward" size={16} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </View>
+    </Modal>
+  );
 }
 
 export default function Feed() {
-  const { colorScheme } = useTheme();
+  const { colorScheme, accentColor } = useTheme();
+  const { isFavorite } = useFavorites();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
 
   useEffect(() => {
     fetch(
-      "https://newsapi.org/v2/everything?q=react-native&language=en&sortBy=publishedAt&apiKey=c384cf9dad3140a58912e9e35ffeeab6",
+      'https://newsapi.org/v2/everything?q=react-native&language=en&sortBy=publishedAt&apiKey=c384cf9dad3140a58912e9e35ffeeab6',
     )
-      .then((res) => res.json())
-      .then((data) => {
+      .then(res => res.json())
+      .then(data => {
         setArticles(data.articles || []);
         setLoading(false);
       })
       .catch(() => setLoading(false));
   }, []);
 
-  const isDark = colorScheme === "dark";
+  const dark = colorScheme === 'dark';
+  const bg = dark ? '#1a1a1a' : '#f5f5f5';
+  const card = dark ? '#2a2a2a' : '#fff';
+  const label = dark ? '#e5e5e5' : '#333';
+  const sublabel = dark ? '#999' : '#666';
 
   if (loading) {
     return (
-      <View
-        style={[
-          styles.container,
-          { backgroundColor: isDark ? "#1a1a1a" : "#f5f5f5" },
-        ]}
-      >
-        <ActivityIndicator size="large" color={isDark ? "#e5e5e5" : "#333"} />
+      <View style={[styles.centered, { backgroundColor: bg }]}>
+        <ActivityIndicator size="large" color={label} />
       </View>
     );
   }
 
   return (
-    <FlatList
-      data={articles}
-      style={{ backgroundColor: isDark ? "#1a1a1a" : "#f5f5f5" }}
-      contentContainerStyle={styles.list}
-      keyExtractor={(item, index) => index.toString()}
-      renderItem={({ item }) => (
-        <TouchableOpacity
-          style={[
-            styles.card,
-            { backgroundColor: isDark ? "#2a2a2a" : "#fff" },
-          ]}
-          onPress={() => Linking.openURL(item.url)}
-        >
-          {item.urlToImage && (
-            <Image source={{ uri: item.urlToImage }} style={styles.image} />
-          )}
-          <View style={styles.content}>
-            <Text
-              style={[styles.title, { color: isDark ? "#e5e5e5" : "#333" }]}
-            >
-              {item.title}
-            </Text>
-            <Text
-              style={[
-                styles.description,
-                { color: isDark ? "#b5b5b5" : "#666" },
-              ]}
-            >
-              {item.description}
-            </Text>
-            <Text style={[styles.source, { color: isDark ? "#888" : "#999" }]}>
-              {item.source.name} •{" "}
-              {new Date(item.publishedAt).toLocaleDateString("pt-BR")}
-            </Text>
-          </View>
-        </TouchableOpacity>
-      )}
-    />
+    <>
+      <FlatList
+        data={articles}
+        style={{ backgroundColor: bg }}
+        contentContainerStyle={styles.list}
+        keyExtractor={(_, index) => index.toString()}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={[styles.card, { backgroundColor: card }]}
+            onPress={() => setSelectedArticle(item)}
+          >
+            {item.urlToImage && (
+              <Image source={{ uri: item.urlToImage }} style={styles.image} />
+            )}
+            <View style={styles.content}>
+              <Text style={[styles.title, { color: label }]}>{item.title}</Text>
+              <Text style={[styles.description, { color: sublabel }]} numberOfLines={2}>
+                {item.description}
+              </Text>
+              <View style={styles.footer}>
+                <Text style={[styles.source, { color: dark ? '#888' : '#999' }]}>
+                  {item.source.name} • {new Date(item.publishedAt).toLocaleDateString('pt-BR')}
+                </Text>
+                <View style={styles.footerIcons}>
+                  {isFavorite(item.url) && (
+                    <Ionicons name="heart" size={13} color="#ef4444" />
+                  )}
+                  <Ionicons name="chevron-forward" size={14} color={accentColor} />
+                </View>
+              </View>
+            </View>
+          </TouchableOpacity>
+        )}
+      />
+
+      <ArticleModal
+        article={selectedArticle}
+        visible={!!selectedArticle}
+        onClose={() => setSelectedArticle(null)}
+        dark={dark}
+        accentColor={accentColor}
+      />
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  list: {
-    padding: 16,
-  },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  list: { padding: 16, gap: 16 },
   card: {
-    marginBottom: 16,
-    borderRadius: 8,
-    overflow: "hidden",
+    borderRadius: 12,
+    overflow: 'hidden',
     elevation: 2,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.08,
     shadowRadius: 4,
   },
-  image: {
-    width: "100%",
-    height: 200,
+  image: { width: '100%', height: 200 },
+  content: { padding: 12, gap: 6 },
+  title: { fontSize: 16, fontWeight: '600' },
+  description: { fontSize: 14 },
+  footer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 2 },
+  footerIcons: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  source: { fontSize: 12 },
+  modalContainer: { flex: 1 },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
   },
-  content: {
-    padding: 12,
+  headerButton: { padding: 4 },
+  headerActions: { flexDirection: 'row', gap: 8 },
+  modalSource: { fontSize: 14, fontWeight: '500', flex: 1, textAlign: 'center', marginHorizontal: 8 },
+  modalScroll: { gap: 0 },
+  modalImage: { width: '100%', height: 220 },
+  modalContent: { padding: 16, gap: 12, margin: 16, borderRadius: 12 },
+  modalTitle: { fontSize: 18, fontWeight: '700', lineHeight: 26 },
+  modalMeta: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  modalDate: { fontSize: 12 },
+  divider: { height: 1 },
+  modalDescription: { fontSize: 15, lineHeight: 22 },
+  modalBody: { fontSize: 14, lineHeight: 22 },
+  readMoreButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 14,
+    borderRadius: 10,
+    gap: 8,
+    marginTop: 4,
   },
-  title: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
-  description: {
-    fontSize: 14,
-    marginBottom: 8,
-  },
-  source: {
-    fontSize: 12,
-  },
+  readMoreText: { color: '#fff', fontWeight: '600', fontSize: 15 },
 });

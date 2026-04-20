@@ -1,0 +1,54 @@
+C4Context
+    title System Context diagram for Tech Newsletter Mobile App
+
+    Enterprise_Boundary(b0, "Tech Newsletter Platform") {
+
+        Person(leitor, "Leitor", "Assina a newsletter e consome cursos de tecnologia.")
+        Person(criador, "Criador de Conteúdo", "Publica cursos e artigos na plataforma.")
+
+        System(appMobile, "App Mobile", "React Native + Expo. Newsletter e cursos de tecnologia.")
+
+        Enterprise_Boundary(b1, "Backend Services") {
+
+            System(apiGateway, "API Gateway", "Autenticação, rate limiting e roteamento de requisições.")
+
+            System_Boundary(b2, "Microserviços") {
+                System(svcNewsletter, "Newsletter Service", "Gerencia assinaturas, edições e envios da newsletter.")
+                System(svcCursos, "Cursos Service", "Catálogo de cursos: Frontend, Backend, AI e mais.")
+                System(svcAuth, "Auth Service", "Autenticação via JWT e OAuth2.")
+                System(svcNotif, "Notificações Service", "Disparo de push notifications e e-mails.")
+            }
+
+            Boundary(b3, "Dados & Mensageria", "boundary") {
+                SystemDb(dbPostgres, "PostgreSQL", "Armazena usuários, assinaturas, cursos e progresso.")
+                SystemDb(dbRedis, "Redis", "Cache de sessão e dados de acesso frequente.")
+                SystemQueue(queueRabbit, "RabbitMQ", "Fila de eventos assíncronos entre serviços.")
+                SystemDb(storage, "Object Storage", "Vídeos, PDFs e materiais dos cursos.")
+            }
+        }
+
+        Boundary(b4, "Serviços Externos", "boundary") {
+            System_Ext(emailProvider, "E-mail Provider", "Envio de newsletters e notificações. Ex: SendGrid, SES.")
+            System_Ext(pushProvider, "Push Notifications", "Notificações mobile via Expo Push, FCM e APNs.")
+            System_Ext(payment, "Pagamentos", "Processamento de assinaturas pagas. Ex: Stripe, Pagar.me.")
+            System_Ext(aiApis, "AI APIs", "Recomendação de conteúdo e geração de resumos. Ex: OpenAI, Anthropic.")
+        }
+    }
+
+    Rel(leitor, appMobile, "Usa", "HTTPS")
+    Rel(criador, appMobile, "Publica conteúdo", "HTTPS")
+    Rel(appMobile, apiGateway, "Requisições", "REST / HTTPS")
+    Rel(apiGateway, svcNewsletter, "Roteia")
+    Rel(apiGateway, svcCursos, "Roteia")
+    Rel(apiGateway, svcAuth, "Roteia")
+    Rel(apiGateway, svcNotif, "Roteia")
+    Rel(svcNewsletter, dbPostgres, "Lê / escreve")
+    Rel(svcCursos, dbPostgres, "Lê / escreve")
+    Rel(svcCursos, storage, "Armazena mídia")
+    Rel(svcAuth, dbRedis, "Cache de sessão")
+    Rel(svcNotif, queueRabbit, "Consome eventos")
+    Rel(svcNewsletter, queueRabbit, "Publica eventos")
+    Rel(svcNotif, emailProvider, "Envia e-mails", "SMTP / API")
+    Rel(svcNotif, pushProvider, "Envia push", "API")
+    Rel(svcCursos, aiApis, "Recomendações e resumos", "API")
+    Rel(appMobile, payment, "Pagamento de assinatura", "HTTPS")

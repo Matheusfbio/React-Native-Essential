@@ -15,7 +15,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
 export default function Login() {
-  const { colorScheme, accentColor } = useTheme();
+  const { colorScheme } = useTheme();
+  const loginAccent = '#4f46e5';
   const dark = colorScheme === 'dark';
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle');
 
@@ -93,7 +94,7 @@ export default function Login() {
 
         <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
           <TouchableOpacity
-            style={[styles.biometricButton, { backgroundColor: accentColor }]}
+            style={[styles.biometricButton, { backgroundColor: loginAccent }]}
             onPress={authenticate}
             disabled={status === 'loading'}
           >
@@ -110,7 +111,7 @@ export default function Login() {
         )}
 
         <TouchableOpacity onPress={authenticate} style={styles.retryButton}>
-          <Text style={[styles.retryText, { color: accentColor }]}>
+          <Text style={[styles.retryText]}>
             {status === 'loading' ? 'Aguardando...' : 'Usar biometria'}
           </Text>
         </TouchableOpacity>
@@ -145,5 +146,5 @@ const styles = StyleSheet.create({
   biometricIcon: { fontSize: 40 },
   errorText: { color: '#ef4444', fontSize: 14, textAlign: 'center' },
   retryButton: { marginTop: 8, padding: 12 },
-  retryText: { fontSize: 16, fontWeight: '600' },
+  retryText: { fontSize: 16, fontWeight: '600', color: '#4f46e5' },
 });
